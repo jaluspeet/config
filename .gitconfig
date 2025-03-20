@@ -1,0 +1,12 @@
+[user]
+	name = jaluspeet
+	email = jaluspit@gmail.com
+
+[difftool]
+	prompt = true
+
+[diff]
+	tool = vimdiff
+
+[difftool "vimdiff"]
+	cmd = "vim -d \"$LOCAL\" \"$REMOTE\""
