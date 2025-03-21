@@ -135,20 +135,17 @@ function! s:custom_highlights_apply() abort
 	highlight SignColumn guibg=NONE ctermbg=NONE
 	highlight Comment cterm=italic term=italic
 	
-	highlight! link GitGutterAdd DiffAdd
-	highlight! link GitGutterDelete DiffDelete
-	highlight! link GitGutterChange DiffChange
-	highlight! link GitGutterAdd DiffAdd
-	highlight! link GitGutterDelete DiffDelete
-	highlight! link GitGutterChange DiffChange
+	highlight! GitGutterAdd ctermfg=Green guifg=Green
+	highlight! GitGutterDelete ctermfg=Red guifg=Red
+	highlight! GitGutterChange ctermfg=Blue guifg=Blue
 
 	highlight link lspInlayHintsParameter Nontext
 	highlight link lspInlayHintsType Nontext
 
-	highlight Error ctermbg=White guibg=White ctermfg=Red guifg=Red
-	highlight Warning ctermbg=Yellow guibg=Yellow ctermfg=Black guifg=Black
-	highlight Information ctermbg=Blue guibg=Blue ctermfg=White guifg=White
-	highlight Hint ctermbg=Green guibg=Green ctermfg=Black guifg=Black
+	highlight Error cterm=underline term=underline
+	highlight Warning ctermfg=Yellow guifg=Yellow cterm=underline term=underline
+	highlight Information ctermfg=Blue guifg=Blue cterm=underline term=underline
+	highlight Hint ctermfg=Green guifg=Green cterm=underline term=underline
 	highlight! link QuickFixLine Error
 	highlight! link LspErrorText Error
 	highlight! link LspWarningText Warning
@@ -187,7 +184,6 @@ Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'Donaldttt/fuzzyy'
 Plug 'tpope/vim-dispatch'
 Plug 'preservim/nerdtree'
-Plug 'tpope/vim-fugitive'
 call plug#end()
 
 " KEYBINDS
@@ -197,12 +193,11 @@ nnoremap <F5> :Make<CR>
 
 nnoremap <leader>n :noh<CR>
 nnoremap <silent><leader>f :FuzzyFiles<CR>
-nnoremap <silent><leader>s :FuzzyGrep<CR>
+nnoremap <silent><leader>g :FuzzyGrep<CR>
 nnoremap <silent><leader>c :FuzzyCommands<CR>
 nnoremap <silent><leader>b :FuzzyBuffers<CR>
 nnoremap <silent><leader>h :FuzzyCmdHistory<CR>
-nnoremap <silent><leader>t :term<CR>
-nnoremap <silent><leader>g :Git<CR>
+nnoremap <silent><leader>s :term<CR>
 nnoremap <silent><leader>e :NERDTreeToggle<CR>
 
 inoremap <expr><Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
