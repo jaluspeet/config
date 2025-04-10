@@ -66,6 +66,15 @@ highlight! Warning ctermfg=DarkYellow guifg=DarkYellow cterm=underline term=unde
 highlight! Information ctermfg=Blue guifg=Blue cterm=underline term=underline
 highlight! Hint ctermfg=Green guifg=Green cterm=underline term=underline
 
+augroup highlight_user_events
+	autocmd!
+	autocmd ColorScheme * highlight! CursorLine ctermbg=NONE guibg=NONE cterm=NONE term=NONE
+	autocmd ColorScheme * highlight! Normal guibg=NONE ctermbg=NONE
+	autocmd ColorScheme * highlight! Warning ctermfg=DarkYellow guifg=DarkYellow cterm=underline term=underline
+	autocmd ColorScheme * highlight! Information ctermfg=Blue guifg=Blue cterm=underline term=underline
+	autocmd ColorScheme * highlight! Hint ctermfg=Green guifg=Green cterm=underline term=underline
+augroup END
+
 let vimDir = '$HOME/.vim'
 
 if stridx(&runtimepath, expand(vimDir)) == -1
@@ -87,14 +96,40 @@ augroup QFClose
 	au WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
 augroup END
 
-function! RunToQuickfix(...) abort
-	let l:cmd = join(a:000, ' ')
-	let l:output = system(l:cmd)
-	cgetexpr l:output
-	copen
-	call PlaceQuickfixSigns()
+function! RunToQuickfixAsync(...) abort
+  let l:cmd = join(a:000, ' ')
+  call job_start(l:cmd, {
+        \ 'out_cb': function('s:OnJobOut'),
+        \ 'err_cb': function('s:OnJobOut'),
+        \ 'exit_cb': function('s:OnJobExit')
+        \ })
 endfunction
-command! -nargs=+ -complete=file RunQF call RunToQuickfix(<f-args>)
+
+let s:output = []
+
+function! s:OnJobOut(job_id, data) abort
+  if a:data !=# ''
+    call extend(s:output, [a:data])
+  endif
+endfunction
+
+function! s:OnJobExit(job_id, status) abort
+  call setqflist([], 'r', {'lines': s:output})
+  let s:output = []
+  copen
+  call PlaceQuickfixSigns()
+endfunction
+
+" synchronous version, for older vim
+" function! RunToQuickfix(...) abort
+" 	let l:cmd = join(a:000, ' ')
+" 	let l:output = system(l:cmd)
+" 	cgetexpr l:output
+" 	copen
+" 	call PlaceQuickfixSigns()
+" endfunction
+
+command! -nargs=+ -complete=file RunQF call RunToQuickfixAsync(<f-args>)
 
 sign define QuickfixLineSign text=>> texthl=Error
 function! PlaceQuickfixSigns() abort
